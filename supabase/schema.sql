@@ -27,8 +27,23 @@ create table if not exists public.reservations (
   party_size     int  not null default 2,
   preferred_date date,
   message        text,
+  status         text not null default 'new'
+                 check (status in ('new', 'confirmed', 'cancelled')),
   created_at     timestamptz not null default now()
 );
+
+-- Upgrade path for databases created before the admin page existed
+-- (add column if not exists cannot attach the check, so add it separately).
+alter table public.reservations
+  add column if not exists status text not null default 'new';
+
+do $$ begin
+  alter table public.reservations
+    add constraint reservations_status_check
+    check (status in ('new', 'confirmed', 'cancelled'));
+exception
+  when duplicate_object then null;
+end $$;
 
 -- 3) Row Level Security ----------------------------------------
 alter table public.programs     enable row level security;
@@ -45,6 +60,23 @@ create policy "programs are public"
 drop policy if exists "anyone can create a reservation" on public.reservations;
 create policy "anyone can create a reservation"
   on public.reservations for insert
+  with check (true);
+
+-- Signed-in users (= admins; there is no public sign-up) may READ
+-- and UPDATE reservations from the admin page (#admin).
+-- If regular user accounts are ever added, narrow these policies
+-- to an explicit admin role instead of `authenticated`.
+drop policy if exists "authenticated can read reservations" on public.reservations;
+create policy "authenticated can read reservations"
+  on public.reservations for select
+  to authenticated
+  using (true);
+
+drop policy if exists "authenticated can update reservations" on public.reservations;
+create policy "authenticated can update reservations"
+  on public.reservations for update
+  to authenticated
+  using (true)
   with check (true);
 
 -- 4) Seed the four workshops -----------------------------------
