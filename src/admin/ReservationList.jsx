@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase.js'
+import ReservationDetail from './ReservationDetail.jsx'
 
 const STATUS_TABS = [
   { key: 'all', label: '전체' },
@@ -22,13 +23,8 @@ function formatDate(value) {
   })
 }
 
-function formatDateTime(value) {
-  if (!value) return '—'
-  return new Date(value).toLocaleString('ko-KR')
-}
-
 // Reservations table: status tabs + text search + expandable detail
-// row with confirm / cancel actions.
+// row with reply / edit / status actions.
 function ReservationList() {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
@@ -159,63 +155,16 @@ function ReservationList() {
                 isOpen && (
                   <tr key={`${r.id}-detail`} className="admin-detail-row">
                     <td colSpan={6}>
-                      <div className="admin-detail">
-                        <dl className="admin-detail-grid">
-                          <div>
-                            <dt>이메일</dt>
-                            <dd><a href={`mailto:${r.email}`}>{r.email}</a></dd>
-                          </div>
-                          <div>
-                            <dt>신청 시각</dt>
-                            <dd>{formatDateTime(r.created_at)}</dd>
-                          </div>
-                          <div className="admin-detail-message">
-                            <dt>메시지</dt>
-                            <dd>{r.message || '(없음)'}</dd>
-                          </div>
-                        </dl>
-                        <div className="admin-detail-actions">
-                          {r.status !== 'confirmed' && (
-                            <button
-                              type="button"
-                              className="btn btn-primary btn-sm"
-                              disabled={updatingId === r.id}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setStatus(r, 'confirmed')
-                              }}
-                            >
-                              확정
-                            </button>
-                          )}
-                          {r.status !== 'cancelled' && (
-                            <button
-                              type="button"
-                              className="btn btn-outline btn-sm"
-                              disabled={updatingId === r.id}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setStatus(r, 'cancelled')
-                              }}
-                            >
-                              취소
-                            </button>
-                          )}
-                          {r.status !== 'new' && (
-                            <button
-                              type="button"
-                              className="btn btn-ghost btn-sm"
-                              disabled={updatingId === r.id}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setStatus(r, 'new')
-                              }}
-                            >
-                              신규로 되돌리기
-                            </button>
-                          )}
-                        </div>
-                      </div>
+                      <ReservationDetail
+                        row={r}
+                        updating={updatingId === r.id}
+                        onStatusChange={setStatus}
+                        onRowChange={(updated) =>
+                          setRows((rs) =>
+                            rs.map((x) => (x.id === updated.id ? updated : x)),
+                          )
+                        }
+                      />
                     </td>
                   </tr>
                 ),

@@ -1459,3 +1459,41 @@ section[id] {
     display: none;
   }
 }
+
+/* Admin — reply composer & edit form */
+.admin-reply,
+.admin-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.admin-edit-form .field-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+}
+.admin-reply-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.admin-actions-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--line);
+  margin: 0 4px;
+}
+.btn.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .admin-edit-form .field-row {
+    grid-template-columns: 1fr;
+  }
+}
