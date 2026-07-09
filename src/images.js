@@ -17,7 +17,11 @@ const p = (id, w = 1200) =>
 const wm = (path) => `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}`
 
 export const IMG = {
-  // Hero — pottery workshop (Unsplash)
+  // Hero — bright studio class: several people carving patterns into
+  // clay bowls together (Unsplash). Landscape crop requested
+  // server-side for the full-bleed backdrop.
+  heroFull:
+    'https://images.unsplash.com/photo-1508269151431-a34449ca161d?auto=format&fit=crop&w=2000&h=1200&q=70',
   heroMain: p('1620140036708-455ed5c0426a', 1200), // hands carving clay
   heroSide: p('1590605095243-072811dbe64c', 800), // throwing on the wheel
 

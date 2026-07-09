@@ -1,5 +1,15 @@
 import { IMG } from '../images.js'
 
+// Bookable options shared by the hero booking bar and the
+// reservation form, so a hero selection can prefill the form.
+export const RESERVATION_OPTIONS = [
+  'Hanji Object Making',
+  'Ceramic Texture Session',
+  'Mother-of-Pearl Detail',
+  'Knot & Textile Moment',
+  'Private group session',
+]
+
 // Fallback data used when Supabase is not configured (or a fetch fails),
 // so the landing page always renders. Shape matches the DB `programs` table.
 export const DEFAULT_PROGRAMS = [

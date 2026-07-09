@@ -1,13 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js'
+import { RESERVATION_OPTIONS } from '../data/programs.js'
 
-const MATERIALS = [
-  'Hanji Object Making',
-  'Ceramic Texture Session',
-  'Mother-of-Pearl Detail',
-  'Knot & Textile Moment',
-  'Private group session',
-]
+const MATERIALS = RESERVATION_OPTIONS
 
 const EMPTY = {
   name: '',
@@ -22,6 +17,23 @@ function ReservationForm() {
   const [form, setForm] = useState(EMPTY)
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
   const [errorMsg, setErrorMsg] = useState('')
+
+  // The hero booking bar dispatches this event so the workshop,
+  // date and party size arrive here already filled in.
+  useEffect(() => {
+    function onPrefill(e) {
+      const { program, preferred_date, party_size } = e.detail ?? {}
+      setForm((f) => ({
+        ...f,
+        ...(program ? { program } : {}),
+        ...(preferred_date ? { preferred_date } : {}),
+        ...(party_size ? { party_size } : {}),
+      }))
+      setStatus('idle')
+    }
+    window.addEventListener('scm:prefill', onPrefill)
+    return () => window.removeEventListener('scm:prefill', onPrefill)
+  }, [])
 
   const update = (key) => (e) =>
     setForm((f) => ({ ...f, [key]: e.target.value }))
